@@ -26,7 +26,11 @@ namespace ScreenSound.Banco
       if (artista == null)
         throw new Exception($"Não foi possivel localizar! Verifique se o(s) dados informados está(ão) correto!");
 
-      base.Atualizar(model, id);
+      artista.Nome = model.Nome;
+      artista.Bio = model.Bio;
+      artista.FotoPerfil = model.FotoPerfil;
+
+      base.Atualizar(artista, id);
     }
 
     public override void Deletar(Artista model)

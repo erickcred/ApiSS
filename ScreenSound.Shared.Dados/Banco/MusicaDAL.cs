@@ -19,12 +19,15 @@ namespace ScreenSound.Banco
     public override void Atualizar(Musica model, int id)
     {
       var musica = _contexto.Musicas
-        .AsNoTracking()
         .FirstOrDefault(x => x.Id == id);
       if (musica is null)
         throw new Exception("Musica não encontrada!");
       
-      base.Atualizar(model, id);
+      musica.Nome = model.Nome;
+      musica.AnoLancamento = model.AnoLancamento;
+      musica.Artista = model.Artista;
+
+      base.Atualizar(musica, id);
     }
 
     public override void Deletar(Musica model)

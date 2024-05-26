@@ -67,9 +67,12 @@
         var retorno = _contexto.SaveChanges();
 
         if (retorno > 0)
-          Console.WriteLine("Artista deletado com sucesso!");
+          Console.WriteLine("Deletado com sucesso!");
         else
-          Console.WriteLine("Não foi possivel deletar o Artista!");
+        {
+          Console.WriteLine("Dadodo para deleção não foi encontrado!");
+          throw new Exception("Dadodo para deleção não foi encontrado!");
+        }
 
         transaction.Commit();
       }
@@ -77,6 +80,7 @@
       {
         transaction.Rollback();
         Console.WriteLine(ex.Message);
+        throw new Exception("Dadodo para deleção não foi encontrado!");
       }
     }
 
