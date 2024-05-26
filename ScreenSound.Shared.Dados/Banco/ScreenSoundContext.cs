@@ -3,7 +3,7 @@ using ScreenSound.Modelos;
 
 namespace ScreenSound.Banco
 {
-  internal class ScreenSoundContext : DbContext
+  public class ScreenSoundContext : DbContext
   {
     private string connectionString = "Data Source=localhost\\SQLEXPRESS;Database=ScreenSoundV0;User Id=sa;Password=123;TrustServerCertificate=True";
 

@@ -3,7 +3,7 @@ using ScreenSound.Modelos;
 
 namespace ScreenSound.Banco
 {
-  internal class ArtistaDAL : DAL<Artista>
+  public class ArtistaDAL : DAL<Artista>
   {
     public ArtistaDAL(ScreenSoundContext contexto) : base(contexto)
     { }
