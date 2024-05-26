@@ -6,7 +6,7 @@ namespace ScreenSound.Banco
 {
   internal class ScreenSoundContext : DbContext
   {
-    private string connectionString = "Data Source=localhost\\SQLEXPRESS;Database=ScreenSound;User Id=sa;Password=123;TrustServerCertificate=True";
+    private string connectionString = "Data Source=localhost\\SQLEXPRESS;Database=ScreenSoundV0;User Id=sa;Password=123;TrustServerCertificate=True";
 
     public DbSet<Artista> Artistas { get; set; }
     public DbSet<Musica> Musicas { get; set; }
@@ -14,7 +14,9 @@ namespace ScreenSound.Banco
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       base.OnConfiguring(optionsBuilder);
-      optionsBuilder.UseSqlServer(connectionString);
+      optionsBuilder
+        .UseSqlServer(connectionString)
+        .UseLazyLoadingProxies();
     }
 
   }
