@@ -44,7 +44,7 @@ namespace ScreenSound.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Artista");
+                    b.ToTable("Artista", (string)null);
                 });
 
             modelBuilder.Entity("ScreenSound.Modelos.Musica", b =>
@@ -69,7 +69,7 @@ namespace ScreenSound.Migrations
 
                     b.HasIndex("ArtistaId");
 
-                    b.ToTable("Musica");
+                    b.ToTable("Musica", (string)null);
                 });
 
             modelBuilder.Entity("ScreenSound.Modelos.Musica", b =>

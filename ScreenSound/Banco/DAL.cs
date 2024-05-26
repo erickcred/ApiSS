@@ -1,10 +1,10 @@
 ﻿namespace ScreenSound.Banco
 {
-  internal abstract class DAL<T> where T : class
+  internal class DAL<T> where T : class
   {
     protected readonly ScreenSoundContext _contexto;
 
-    protected DAL(ScreenSoundContext contexto)
+    public DAL(ScreenSoundContext contexto)
     {
       _contexto = contexto;
     }
@@ -83,6 +83,11 @@
     public virtual T? RecuperarPor(Func<T, bool> condicao)
     {
       return _contexto.Set<T>().FirstOrDefault(condicao);
+    }
+
+    public virtual IEnumerable<T> ListarPor(Func<T, bool> condicao)
+    {
+      return _contexto.Set<T>().Where(condicao).ToList();
     }
   }
 }
