@@ -12,12 +12,12 @@ internal class MenuMostrarMusicas : Menu
     Console.Write("Digite o nome do artista que deseja conhecer melhor: ");
     string nomeDoArtista = Console.ReadLine()!;
 
-    var artistaRecuperado = artistaDAL.ListarArtista(nomeDoArtista);
+    var artistaRecuperado = artistaDAL
+      .RecuperarPor(x => x.Nome.ToLower().Equals(nomeDoArtista.ToLower()));
     if (artistaRecuperado is not null)
     {
       Console.WriteLine("\nDiscografia:");
-      foreach (var arstista in artistaRecuperado)
-        arstista.ExibirDiscografia();
+      artistaRecuperado.ExibirDiscografia();
 
       Console.WriteLine("\nDigite uma tecla para voltar ao menu principal");
       Console.ReadKey();

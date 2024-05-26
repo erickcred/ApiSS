@@ -9,6 +9,7 @@ namespace ScreenSound.Banco
     private string connectionString = "Data Source=localhost\\SQLEXPRESS;Database=ScreenSound;User Id=sa;Password=123;TrustServerCertificate=True";
 
     public DbSet<Artista> Artistas { get; set; }
+    public DbSet<Musica> Musicas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -13,7 +13,8 @@ internal class MenuRegistrarMusica : Menu
     Console.Write("Digite o artista cuja música deseja registrar: ");
     string nomeDoArtista = Console.ReadLine()!;
 
-    var artistaRecuperado = artistaDAL.ListarArtista(nomeDoArtista, 1);
+    var artistaRecuperado = artistaDAL
+      .RecuperarPor(x => x.Nome.ToLower().Equals(nomeDoArtista.ToLower()));
     if (artistaRecuperado is not null)
     {
       Console.Write("Agora digite o título da música: ");

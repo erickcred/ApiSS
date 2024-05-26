@@ -9,6 +9,7 @@ internal class Musica
 
   public string Nome { get; set; }
   public int Id { get; set; }
+  public int ArtistaId { get; set; }
 
   public void ExibirFichaTecnica()
   {

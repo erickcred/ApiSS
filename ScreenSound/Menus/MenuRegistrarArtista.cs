@@ -17,7 +17,7 @@ internal class MenuRegistrarArtista : Menu
     string bioDoArtista = Console.ReadLine()!;
 
     Artista artista = new Artista(nomeDoArtista, bioDoArtista);
-    artistaDAL.AdicionarArtista(artista);
+    artistaDAL.Adicionar(artista);
 
     Thread.Sleep(4000);
     Console.Clear();
