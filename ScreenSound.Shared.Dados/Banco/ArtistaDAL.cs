@@ -21,16 +21,7 @@ namespace ScreenSound.Banco
       ValidaStringLength("Nome", model.Nome);
       ValidaStringLength("Biografia", model.Bio);
       ValidaStringLength("Foto Perfil", model.FotoPerfil);
-
-      var artista = _contexto.Artistas.FirstOrDefault(x => x.Id == id);
-      if (artista == null)
-        throw new Exception($"Não foi possivel localizar! Verifique se o(s) dados informados está(ão) correto!");
-
-      artista.Nome = model.Nome;
-      artista.Bio = model.Bio;
-      artista.FotoPerfil = model.FotoPerfil;
-
-      base.Atualizar(artista, id);
+      base.Atualizar(model, id);
     }
 
     public override void Deletar(Artista model)

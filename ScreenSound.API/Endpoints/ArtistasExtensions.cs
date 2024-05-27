@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ScreenSound.API.Requests.Artistas;
 using ScreenSound.Banco;
 using ScreenSound.Modelos;
 
@@ -22,19 +23,37 @@ namespace ScreenSound.API.Endpoints
         return Results.Ok(artista);
       });
 
-      app.MapPost("/Artistas", ([FromServices] ArtistaDAL artistaDAL, [FromBody] Artista model) =>
+      app.MapPost("/Artistas", ([FromServices] ArtistaDAL artistaDAL, [FromBody] ArtistaRequest artistaRequest) =>
       {
-        artistaDAL.Adicionar(model);
+        var artista = new Artista(artistaRequest.Nome, artistaRequest.Bio);
+        artistaDAL.Adicionar(artista);
         return Results.Created();
       });
 
-      app.MapPut("/Artistas/{id}", ([FromServices] ArtistaDAL artistaDAL, [FromBody] Artista model, int id) =>
+      app.MapPut("/Artistas/{id}", ([FromServices] ArtistaDAL artistaDAL, [FromBody] ArtistaRequestEdit artistaRequestEdit, int id) =>
       {
         var artista = artistaDAL.RecuperarPor(x => x.Id == id);
         if (artista is null)
           return Results.NotFound();
 
-        artistaDAL.Atualizar(model, id);
+        artista.Nome = artistaRequestEdit.Nome;
+        artista.Bio = artistaRequestEdit.Bio;
+        artista.FotoPerfil = artistaRequestEdit.FotoPerfil ?? artista.FotoPerfil;
+
+        foreach (var musica in artista.Musicas)
+        {
+          var musicaParaAtualizar = artista.Musicas.FirstOrDefault(x => x.Id == artistaRequestEdit.Musica.Id);
+          if (musicaParaAtualizar is not null)
+          {
+            musicaParaAtualizar.Nome = artistaRequestEdit.Musica.Nome;
+            musicaParaAtualizar.AnoLancamento = artistaRequestEdit.Musica.AnoLancamento;
+            break;
+          }
+          else
+            artista.AdicionarMusica(artistaRequestEdit.Musica);
+        }
+
+        artistaDAL.Atualizar(artista, id);
         return Results.Ok();
       });
 

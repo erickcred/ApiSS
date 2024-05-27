@@ -1,4 +1,9 @@
-﻿namespace ScreenSound.Banco
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using ScreenSound.Modelos;
+using System.Data;
+
+namespace ScreenSound.Banco
 {
   public class DAL<T> where T : class
   {
