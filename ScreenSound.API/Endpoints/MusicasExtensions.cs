@@ -10,7 +10,7 @@ namespace ScreenSound.API.Endpoints
   {
     public static void AddEndpointMusicas(this WebApplication app)
     {
-      app.MapGet("/Musicas", ([FromServices] MusicaDAL musicaDAL) =>
+      app.MapGet("/Musicas", ([FromServices] DAL<Musica> musicaDAL) =>
       {
         var musicaResponse = ParaListaMusicasResponse(musicaDAL.Listar());
         return Results.Ok(musicaResponse);

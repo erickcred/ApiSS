@@ -8,8 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ScreenSoundContext>();
 builder.Services.AddTransient<DAL<Artista>>();
-builder.Services.AddTransient<ArtistaDAL>();
-builder.Services.AddTransient<MusicaDAL>();
+//builder.Services.AddTransient<ArtistaDAL>();
+//builder.Services.AddTransient<MusicaDAL>();
 builder.Services.AddTransient<DAL<Musica>>();
 
 // Configuração Swagger

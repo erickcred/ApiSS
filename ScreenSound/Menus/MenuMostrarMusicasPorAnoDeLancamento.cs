@@ -5,7 +5,7 @@ namespace ScreenSound.Menus
 {
   internal class MenuMostrarMusicasPorAnoDeLancamento : Menu
   {
-    public override void Executar(ArtistaDAL artistaDAL)
+    public override void Executar(DAL<Artista> artistaDAL)
     {
       base.Executar(artistaDAL);
       ExibirTituloDaOpcao("Exibir Musicas pelo ano lançamento");
