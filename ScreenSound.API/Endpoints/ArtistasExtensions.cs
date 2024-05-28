@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ScreenSound.API.Requests.Artistas;
+using ScreenSound.API.Response.Artista;
 using ScreenSound.Banco;
 using ScreenSound.Modelos;
 
@@ -9,9 +10,10 @@ namespace ScreenSound.API.Endpoints
   {
     public static void AddEndPointsArtistas(this WebApplication app)
     {
-      app.MapGet("/Artistas", ([FromServices] ArtistaDAL artistaDAL) =>
+      app.MapGet("/Artistas", ([FromServices] DAL<Artista> artistaDAL) =>
       {
-        return Results.Ok(artistaDAL.Listar());
+        var artistaResponse = ParaListaArtistaResponse(artistaDAL.Listar());
+        return Results.Ok(artistaResponse);
       });
 
       app.MapGet("/Artistas/{nome}", ([FromServices] DAL<Artista> artistaDAL, string nome) =>
@@ -20,17 +22,18 @@ namespace ScreenSound.API.Endpoints
         if (artista is null)
           return Results.NotFound();
 
-        return Results.Ok(artista);
+        var artistaResponse = ParaArtistaResponse(artista);
+        return Results.Ok(artistaResponse);
       });
 
-      app.MapPost("/Artistas", ([FromServices] ArtistaDAL artistaDAL, [FromBody] ArtistaRequest artistaRequest) =>
+      app.MapPost("/Artistas", ([FromServices] DAL<Artista> artistaDAL, [FromBody] ArtistaRequest artistaRequest) =>
       {
         var artista = new Artista(artistaRequest.Nome, artistaRequest.Bio);
         artistaDAL.Adicionar(artista);
         return Results.Created();
       });
 
-      app.MapPut("/Artistas/{id}", ([FromServices] ArtistaDAL artistaDAL, [FromBody] ArtistaRequestEdit artistaRequestEdit, int id) =>
+      app.MapPut("/Artistas/{id}", ([FromServices] DAL<Artista> artistaDAL, [FromBody] ArtistaRequestEdit artistaRequestEdit, int id) =>
       {
         var artista = artistaDAL.RecuperarPor(x => x.Id == id);
         if (artista is null)
@@ -66,6 +69,16 @@ namespace ScreenSound.API.Endpoints
         artistaDAL.Deletar(artista);
         return Results.NoContent();
       });
+    }
+
+    private static ICollection<ArtistaResponse> ParaListaArtistaResponse(IEnumerable<Artista> artistas)
+    {
+      return (ICollection<ArtistaResponse>)artistas.Select(a => ParaArtistaResponse(a)).ToList();
+    }
+
+    private static ArtistaResponse ParaArtistaResponse(Artista artista)
+    {
+      return new ArtistaResponse(artista.Id, artista.Nome, artista.Bio, artista.FotoPerfil);
     }
 
   }

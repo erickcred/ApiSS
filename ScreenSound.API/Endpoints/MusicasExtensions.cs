@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ScreenSound.API.Requests.Musicas;
+using ScreenSound.API.Response.Musica;
 using ScreenSound.Banco;
 using ScreenSound.Modelos;
 
@@ -11,7 +12,8 @@ namespace ScreenSound.API.Endpoints
     {
       app.MapGet("/Musicas", ([FromServices] MusicaDAL musicaDAL) =>
       {
-        return Results.Ok(musicaDAL.Listar());
+        var musicaResponse = ParaListaMusicasResponse(musicaDAL.Listar());
+        return Results.Ok(musicaResponse);
       });
 
       app.MapGet("/Musicas/{nome}", ([FromServices] DAL<Musica> musicaDAL, string nome) =>
@@ -20,10 +22,11 @@ namespace ScreenSound.API.Endpoints
         if (musica is null)
           return Results.NotFound();
 
-        return Results.Ok(musica);
+        var musicaResponse = ParaMusicaResponse(musica);
+        return Results.Ok(musicaResponse);
       });
 
-      app.MapPost("/Musicas", ([FromServices] MusicaDAL musicaDAL, [FromBody] MusicaRequest musicaRequest) =>
+      app.MapPost("/Musicas", ([FromServices] DAL<Musica> musicaDAL, [FromBody] MusicaRequest musicaRequest) =>
       {
         var musica = new Musica(musicaRequest.Nome);
         if (musicaRequest.AnoLancamento != null)
@@ -32,15 +35,15 @@ namespace ScreenSound.API.Endpoints
         return Results.Created();
       });
 
-      app.MapPut("/Musicas/{id}", ([FromServices] MusicaDAL musicaDAL, [FromBody] MusicaRequestEdit musicaRequestEdit, int id) =>
+      app.MapPut("/Musicas/{id}", ([FromServices] DAL<Musica> musicaDAL, [FromBody] MusicaRequestEdit musicaRequestEdit, int id) =>
       {
         var musica = musicaDAL.RecuperarPor(x => x.Id == id);
         if (musica is null)
           return Results.NotFound();
 
-        musica.Nome = musicaRequestEdit.Nome;
-        musica.AnoLancamento = musicaRequestEdit.AnoLancamento?? 0;
-        musica.Artista = musicaRequestEdit.Artista ?? null;
+        musica.Nome = musicaRequestEdit.Nome ?? musica.Nome;
+        musica.AnoLancamento = musicaRequestEdit.AnoLancamento ?? musica.AnoLancamento;
+        musica.Artista = musicaRequestEdit.Artista ?? musica.Artista;
 
         musicaDAL.Atualizar(musica, id);
         return Results.Ok();
@@ -55,6 +58,16 @@ namespace ScreenSound.API.Endpoints
         musicaDAL.Deletar(musica);
         return Results.NoContent();
       });
+    }
+
+    private static ICollection<MusicaResponse> ParaListaMusicasResponse(IEnumerable<Musica> musicas)
+    {
+      return musicas.Select(a => ParaMusicaResponse(a)).ToList();
+    }
+
+    private static MusicaResponse ParaMusicaResponse(Musica musica)
+    {
+      return new MusicaResponse(musica.Id, musica.Nome, musica.Artista?.Id, musica.Artista?.Nome);
     }
   }
 }

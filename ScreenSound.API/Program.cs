@@ -1,4 +1,5 @@
 using ScreenSound.API.Endpoints;
+using ScreenSound.API.Response.Artista;
 using ScreenSound.Banco;
 using ScreenSound.Modelos;
 using System.Text.Json.Serialization;
