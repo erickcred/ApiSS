@@ -21,5 +21,16 @@ namespace ScreenSound.Banco
         .UseSqlServer(connectionString);
     }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<Musica>()
+        .HasMany(g => g.Generos)
+        .WithMany(m => m.Musicas);
+
+      modelBuilder.Entity<Musica>()
+        .HasMany(d => d.Discografias)
+        .WithMany(m => m.Musicas);
+    }
+
   }
 }

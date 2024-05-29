@@ -1,5 +1,11 @@
 ﻿using ScreenSound.Modelos;
+using System.ComponentModel.DataAnnotations;
 
 namespace ScreenSound.API.Requests.Artistas;
 
-public record ArtistaRequestEdit(string Nome, string Bio, string? FotoPerfil, Musica? Musica);
+public record ArtistaRequestEdit(
+  int Id,
+  string Nome,
+  string Bio,
+  string? FotoPerfil,
+  Musica? Musica);
