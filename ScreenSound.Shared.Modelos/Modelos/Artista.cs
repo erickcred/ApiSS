@@ -5,10 +5,10 @@ namespace ScreenSound.Modelos;
 [Table("Artista")]
 public class Artista
 {
-  public string Nome { get; set; }
-  public string FotoPerfil { get; set; }
-  public string Bio { get; set; }
   public int Id { get; set; }
+  public string Nome { get; set; }
+  public string Bio { get; set; }
+  public string FotoPerfil { get; set; }
 
   public virtual ICollection<Musica> Musicas { get; set; } = new List<Musica>();
 

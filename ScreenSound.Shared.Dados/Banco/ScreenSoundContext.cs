@@ -15,7 +15,6 @@ namespace ScreenSound.Banco
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      base.OnConfiguring(optionsBuilder);
       optionsBuilder
         .UseLazyLoadingProxies()
         .UseSqlServer(connectionString);

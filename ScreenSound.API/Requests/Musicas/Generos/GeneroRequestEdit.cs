@@ -1,4 +1,4 @@
-﻿namespace ScreenSound.API.Requests.Musicas;
+﻿namespace ScreenSound.API.Requests.Musicas.Generos;
 
 public record GeneroRequestEdit(
   int Id,

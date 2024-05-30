@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ScreenSound.API.Requests.Musicas.Discografias;
+using ScreenSound.API.Requests.Musicas.Generos;
 
 namespace ScreenSound.API.Requests.Musicas;
 public record MusicaRequest(

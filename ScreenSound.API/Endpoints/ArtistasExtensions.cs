@@ -12,8 +12,11 @@ namespace ScreenSound.API.Endpoints
     {
       app.MapGet("/Artistas", ([FromServices] DAL<Artista> artistaDAL) =>
       {
-        var artistaResponse = ParaListaArtistaResponse(artistaDAL.Listar());
-        return Results.Ok(artistaResponse);
+        var artistas = artistaDAL.Listar();
+        if (artistas is null) return Results.NotFound();
+
+        var artistasResponse = ParaListaArtistaResponse(artistas.ToList());
+        return Results.Ok(artistasResponse);
       });
 
       app.MapGet("/Artistas/{nome}", ([FromServices] DAL<Artista> artistaDAL, string nome) =>
@@ -43,19 +46,6 @@ namespace ScreenSound.API.Endpoints
         artista.Bio = artistaRequestEdit.Bio;
         artista.FotoPerfil = artistaRequestEdit.FotoPerfil ?? artista.FotoPerfil;
 
-        foreach (var musica in artista.Musicas)
-        {
-          var musicaParaAtualizar = artista.Musicas.FirstOrDefault(x => x.Id == artistaRequestEdit.Musica.Id);
-          if (musicaParaAtualizar is not null)
-          {
-            musicaParaAtualizar.Nome = artistaRequestEdit.Musica.Nome;
-            musicaParaAtualizar.AnoLancamento = artistaRequestEdit.Musica.AnoLancamento;
-            break;
-          }
-          else
-            artista.AdicionarMusica(artistaRequestEdit.Musica);
-        }
-
         artistaDAL.Atualizar(artista, id);
         return Results.Ok();
       });
@@ -71,7 +61,8 @@ namespace ScreenSound.API.Endpoints
       });
     }
 
-    private static ICollection<ArtistaResponse> ParaListaArtistaResponse(IEnumerable<Artista> artistas)
+    #region Response Converter
+    private static ICollection<ArtistaResponse> ParaListaArtistaResponse(ICollection<Artista> artistas)
     {
       return (ICollection<ArtistaResponse>)artistas.Select(a => ParaArtistaResponse(a)).ToList();
     }
@@ -80,6 +71,7 @@ namespace ScreenSound.API.Endpoints
     {
       return new ArtistaResponse(artista.Id, artista.Nome, artista.Bio, artista.FotoPerfil);
     }
+    #endregion
 
   }
 }

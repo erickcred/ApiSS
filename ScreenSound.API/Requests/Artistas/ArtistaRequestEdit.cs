@@ -7,5 +7,4 @@ public record ArtistaRequestEdit(
   int Id,
   string Nome,
   string Bio,
-  string? FotoPerfil,
-  Musica? Musica);
+  string? FotoPerfil) : ArtistaRequest(Nome, Bio);

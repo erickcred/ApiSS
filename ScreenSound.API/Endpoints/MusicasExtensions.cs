@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ScreenSound.API.Requests.Musicas;
+using ScreenSound.API.Requests.Musicas.Discografias;
+using ScreenSound.API.Requests.Musicas.Generos;
 using ScreenSound.API.Response.Musica;
+using ScreenSound.API.Response.Musica.Discografias;
+using ScreenSound.API.Response.Musica.Generos;
 using ScreenSound.Banco;
 using ScreenSound.Modelos;
 using ScreenSound.Shared.Modelos.Modelos;
@@ -13,8 +17,11 @@ namespace ScreenSound.API.Endpoints
     {
       app.MapGet("/Musicas", ([FromServices] DAL<Musica> musicaDAL) =>
       {
-        var musicaResponse = MusicasResponseConverter(musicaDAL.Listar().ToList());
-        return Results.Ok(musicaResponse);
+        var musicas = musicaDAL.Listar();
+        if (musicas is null) return Results.NotFound();
+
+        var musicasResponse = MusicasResponseConverter(musicas.ToList());
+        return Results.Ok(musicasResponse);
       });
 
       app.MapGet("/Musicas/{nome}", ([FromServices] DAL<Musica> musicaDAL, string nome) =>
@@ -27,18 +34,22 @@ namespace ScreenSound.API.Endpoints
         return Results.Ok(musicaResponse);
       });
 
-      app.MapPost("/Musicas", ([FromServices] DAL<Musica> musicaDAL, [FromBody] MusicaRequest musicaRequest) =>
+      app.MapPost("/Musicas", (
+        [FromServices] DAL<Musica> musicaDAL,
+        [FromServices] DAL<Genero> generoDAL,
+        [FromServices] DAL<Discografia> disografiaDAL,
+        [FromBody] MusicaRequest musicaRequest) =>
       {
         var musica = new Musica(musicaRequest.Nome)
         {
           ArtistaId = musicaRequest.ArtistaId,
           AnoLancamento = musicaRequest.AnoLancamento,
           Generos = musicaRequest.Generos is not null ?
-            GeneroRequestConverter(musicaRequest.Generos) : new List<Genero>(),
+            GeneroRequestConverter(musicaRequest.Generos, generoDAL) : new List<Genero>(),
           Discografias = musicaRequest.Discografias is not null ?
-            DiscografiaRequestConverter(musicaRequest.Discografias) : new List<Discografia>()
+            DiscografiaRequestConverter(musicaRequest.Discografias, disografiaDAL) : new List<Discografia>()
         };
-        
+
         musicaDAL.Adicionar(musica);
         return Results.Created();
       });
@@ -50,11 +61,7 @@ namespace ScreenSound.API.Endpoints
           return Results.NotFound();
 
         musica.Nome = musicaRequestEdit.Nome ?? musica.Nome;
-        musica.AnoLancamento = musicaRequestEdit.AnoLancamento ?? musica.AnoLancamento;
-        musica.Generos = musicaRequestEdit.Generos is not null ?
-            GeneroRequestEditConverter(musicaRequestEdit.Generos) : new List<Genero>();
-        musica.Discografias = musicaRequestEdit.Discografias is not null ?
-            DiscografiaRequestEditConverter(musicaRequestEdit.Discografias) : new List<Discografia>();
+        musica.AnoLancamento = musicaRequestEdit.AnoLancamento;
 
         musicaDAL.Atualizar(musica, id);
         return Results.Ok();
@@ -71,52 +78,59 @@ namespace ScreenSound.API.Endpoints
       });
     }
 
-    #region Request
-    private static ICollection<Discografia> DiscografiaRequestConverter(ICollection<DiscografiaRequest> discografias)
-    {
-      return discografias.Select(a => RequestToEntity(a)).ToList();
-    }
+    #region RequestConverter
 
+    #region Discografia
+    private static ICollection<Discografia> DiscografiaRequestConverter(ICollection<DiscografiaRequest> discografias, DAL<Discografia> discografiaDAL)
+    {
+      var listaDeDiscografias = new List<Discografia>();
+      foreach (var item in discografias)
+      {
+        var entity = RequestToEntity(item);
+        var discografia = discografiaDAL.RecuperarPor(d => d.Nome.Equals(entity.Nome, StringComparison.OrdinalIgnoreCase));
+        
+        if (discografia is not null)
+          listaDeDiscografias.Add(discografia);
+        else
+          listaDeDiscografias.Add(entity);
+      }
+      return listaDeDiscografias;
+    }
+    
     private static Discografia RequestToEntity(DiscografiaRequest discografia)
     {
-      return new Discografia() { Nome = discografia.Nome, Descricao = discografia.Descricao };
+      return new Discografia(discografia.Nome) { Descricao = discografia.Descricao };
     }
+    #endregion
 
-    private static ICollection<Discografia> DiscografiaRequestEditConverter(ICollection<DiscografiaRequestEdit> discografias)
+    #region Generos
+    private static ICollection<Genero> GeneroRequestConverter(ICollection<GeneroRequest> generos, DAL<Genero> generoDAL)
     {
-      return discografias.Select(a => RequestToEntity(a)).ToList();
-    }
-
-    private static Discografia RequestToEntity(DiscografiaRequestEdit discografia)
-    {
-      return new Discografia() { Id = discografia.Id, Nome = discografia.Nome, Descricao = discografia.Descricao };
-    }
-
-    private static ICollection<Genero> GeneroRequestConverter(ICollection<GeneroRequest> generos)
-    {
-      return generos.Select(a => RequestToEntity(a)).ToList();
+      var listaDeGeneros = new List<Genero>();
+      foreach (var item in generos)
+      {
+        var entity = RequestToEntity(item);
+        var genero = generoDAL.RecuperarPor(g => g.Nome.Equals(item.Nome, StringComparison.OrdinalIgnoreCase));
+        
+        if (genero is not null)
+          listaDeGeneros.Add(genero);
+        else
+          listaDeGeneros.Add(entity);
+      }
+      return listaDeGeneros;
     }
 
     private static Genero RequestToEntity(GeneroRequest genero)
     {
-      return new Genero() { Nome = genero.Nome, Descricao = genero.Descricao };
+      return new Genero(genero.Nome) { Descricao = genero.Descricao };
     }
-
-    private static ICollection<Genero> GeneroRequestEditConverter(ICollection<GeneroRequestEdit> generos)
-    {
-      return generos.Select(a => RequestToEntity(a)).ToList();
-    }
-
-    private static Genero RequestToEntity(GeneroRequestEdit genero)
-    {
-      return new Genero() {Id = genero.Id, Nome = genero.Nome, Descricao = genero.Descricao };
-    }
+    #endregion
 
     #endregion
 
 
 
-    #region Response
+    #region Response Converter
     private static ICollection<MusicaResponse> MusicasResponseConverter(ICollection<Musica> musicas)
     {
       return musicas.Select(a => EntityToResponse(a)).ToList();
@@ -134,21 +148,18 @@ namespace ScreenSound.API.Endpoints
 
     private static MusicaResponse EntityToResponse(Musica musica)
     {
-      return new MusicaResponse(musica.Id, musica.Nome, musica?.ArtistaId, musica?.Artista?.Nome, 
-        GenerosResponseConverter(musica.Generos), DiscografiasResponseConverter(musica.Discografias));
+      return new MusicaResponse(musica.Id, musica.Nome, musica.Artista!.Id, musica.Artista.Nome);
     }
 
     private static GeneroResponse EntityToResponse(Genero genero)
     {
-      return new GeneroResponse(genero.Id, genero.Nome, genero.Descricao);
+      return new GeneroResponse(genero.Id, genero.Nome, genero.Descricao!);
     }
 
     private static DiscografiaResponse EntityToResponse(Discografia discografia)
     {
       return new DiscografiaResponse(discografia.Id, discografia.Nome, discografia.Descricao);
     }
-
-
     #endregion
   }
 }
