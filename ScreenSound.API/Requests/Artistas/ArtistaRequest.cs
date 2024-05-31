@@ -4,5 +4,6 @@ namespace ScreenSound.API.Requests.Artistas;
 
 public record ArtistaRequest(
   [Required] string Nome,
-  [Required] string Bio);
+  [Required] string Bio,
+  string? FotoPerfil);
 
