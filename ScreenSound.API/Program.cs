@@ -8,6 +8,8 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors();
+
 builder.Services.AddDbContext<ScreenSoundContext>(options =>
 {
   options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
@@ -34,6 +36,12 @@ app.AddEndpointDiscografia();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseCors(x =>
+  x.AllowAnyMethod()
+  .AllowAnyHeader()
+  .SetIsOriginAllowed(origin => true)
+  .AllowCredentials());
 
 
 app.Run();

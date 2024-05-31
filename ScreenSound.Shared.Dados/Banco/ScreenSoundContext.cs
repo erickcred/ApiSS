@@ -6,8 +6,9 @@ namespace ScreenSound.Banco
 {
   public class ScreenSoundContext : DbContext
   {
-    private string connectionString = "";// "Data Source=localhost\\SQLEXPRESS;Database=ScreenSoundV0;User Id=sa;Password=123;TrustServerCertificate=True";
+    private string connectionString = "Data Source=localhost\\SQLEXPRESS;Database=ScreenSoundV0;User Id=sa;Password=123;TrustServerCertificate=True";
 
+    public ScreenSoundContext() { }
     public ScreenSoundContext(DbContextOptions options) : base(options) { }
 
     public DbSet<Artista> Artistas { get; set; }
