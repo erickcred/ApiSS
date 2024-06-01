@@ -3,4 +3,10 @@
 public record GeneroResponse(
   int Id,
   string Nome,
-  string Descricao);
+  string Descricao)
+{
+  public override string ToString()
+  {
+    return $"{Nome}";
+  }
+}

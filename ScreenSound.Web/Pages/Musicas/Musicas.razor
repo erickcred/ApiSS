@@ -1,5 +1,25 @@
-﻿<h3>Musicas</h3>
+﻿@page "/Musicas"
+@inject MusicaAPI musicaAPI
+
+<h3>Musicas</h3>
+
+@if (musicas is not null)
+{
+  <MudGrid>
+    @foreach (var musica in musicas)
+    {
+      <MudItem xs="3">
+        <CardMusica Musica="musica" />
+      </MudItem>
+    }
+  </MudGrid>
+}
 
 @code {
+  private ICollection<MusicaResponse>? musicas { get; set; }
 
+  protected override async Task OnInitializedAsync()
+  {
+    musicas = await musicaAPI.GetGenerosAsync();
+  }
 }
