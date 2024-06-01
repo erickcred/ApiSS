@@ -20,6 +20,18 @@
                   Lines="4"
                   Required="true"
                   RequiredError="Compo obrigatório" />
+
+    <MudImage Class="mt-4" Src="@fileImage" />
+    <MudFileUpload T="IBrowserFile" Accept=".jpeg" FilesChanged="UploadFile">
+      <ButtonTemplate>
+        <MudButton HtmlTag="label"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.PhotoCamera"
+                   for="@context">Foto de Perfil</MudButton>
+      </ButtonTemplate>
+    </MudFileUpload>
+
     <div class="d-flex align-center justify-space-between mt-4">
       <MudButton Variant="Variant.Filled"
                  @onclick="Atualizar"
@@ -38,6 +50,8 @@
 @code {
   private string? nome;
   private string? bio;
+  private string? fileImage;
+  private string? fotoPerfil;
 
   [Parameter]
   public string? NomeArtista { get; set; }
@@ -56,6 +70,7 @@
     Artista!.Deconstruct(out int Id, out string Nome, out string Bio, out string? FotoPerfil);
     Nome = nome;
     Bio = bio;
+    FotoPerfil = fotoPerfil;
 
 
     var artista = new ArtistaRequestEdit(Id, Nome, Bio, FotoPerfil);
@@ -67,5 +82,21 @@
   {
     await artistaAPI.DeleteArtistaAsync(Artista!.Id);
     navigationManager.NavigateTo("/Artistas");
+  }
+
+  private async Task UploadFile(IBrowserFile file)
+  {
+    long maxFileSize = 1024 * 1024 * 15;
+    var format = "image/jpeg";
+    var resizedImage = await file.RequestImageFileAsync(format, 200, 200);
+
+    using var fileStream = resizedImage.OpenReadStream();
+    using var memoryStream = new MemoryStream();
+    await fileStream.CopyToAsync(memoryStream);
+
+    var imageUpload = Convert.ToBase64String(memoryStream.ToArray());
+    fileImage = $"data:{format};base64,{imageUpload}";
+
+    fotoPerfil = imageUpload;
   }
 }

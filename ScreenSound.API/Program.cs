@@ -37,6 +37,8 @@ app.AddEndpointDiscografia();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseStaticFiles();
+
 app.UseCors(x =>
   x.AllowAnyMethod()
   .AllowAnyHeader()
