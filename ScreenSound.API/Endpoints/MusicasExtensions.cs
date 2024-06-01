@@ -15,7 +15,7 @@ namespace ScreenSound.API.Endpoints
   {
     public static void AddEndpointMusicas(this WebApplication app)
     {
-      app.MapGet("/Musicas", ([FromServices] DAL<Musica> musicaDAL) =>
+      app.MapGet("/Musicas", async ([FromServices] DAL<Musica> musicaDAL) =>
       {
         var musicas = musicaDAL.Listar();
         if (musicas is null) return Results.NotFound();
@@ -40,7 +40,7 @@ namespace ScreenSound.API.Endpoints
         [FromServices] DAL<Discografia> disografiaDAL,
         [FromBody] MusicaRequest musicaRequest) =>
       {
-        var musica = new Musica(musicaRequest.Nome)
+        var musica = new Musica(musicaRequest.Nome.Trim())
         {
           ArtistaId = musicaRequest.ArtistaId,
           AnoLancamento = musicaRequest.AnoLancamento,
@@ -148,7 +148,7 @@ namespace ScreenSound.API.Endpoints
 
     private static MusicaResponse EntityToResponse(Musica musica)
     {
-      return new MusicaResponse(musica.Id, musica.Nome, musica.Artista!.Id, musica.Artista.Nome);
+      return new MusicaResponse(musica.Id, musica.Nome!, musica.Artista!.Id, musica.Artista.Nome, musica.AnoLancamento);
     }
 
     private static GeneroResponse EntityToResponse(Genero genero)

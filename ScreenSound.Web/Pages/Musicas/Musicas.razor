@@ -1,5 +1,6 @@
-﻿@page "/Musicas"
+﻿@page "/Musicas/Generos"
 @inject MusicaAPI musicaAPI
+@inject ArtistaAPI artistaAPI
 
 <h3>Musicas</h3>
 
@@ -16,10 +17,10 @@
 }
 
 @code {
-  private ICollection<MusicaResponse>? musicas { get; set; }
+  private ICollection<MusicaResponse>? musicas;
 
   protected override async Task OnInitializedAsync()
   {
-    musicas = await musicaAPI.GetGenerosAsync();
+    musicas = await musicaAPI.GetMusicasAsync();
   }
 }

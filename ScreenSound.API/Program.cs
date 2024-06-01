@@ -12,7 +12,8 @@ builder.Services.AddCors();
 
 builder.Services.AddDbContext<ScreenSoundContext>(options =>
 {
-  options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
+  options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"])
+        .UseLazyLoadingProxies();
 });
 builder.Services.AddTransient<DAL<Artista>>();
 builder.Services.AddTransient<DAL<Musica>>();

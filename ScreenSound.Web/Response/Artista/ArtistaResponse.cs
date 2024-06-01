@@ -4,5 +4,11 @@
     int Id,
     string Nome,
     string Bio,
-    string? FotoPerfil);
+    string? FotoPerfil)
+  {
+    public override string ToString()
+    {
+      return $"{Nome}";
+    }
+  }
 }

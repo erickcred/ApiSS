@@ -21,8 +21,8 @@ namespace ScreenSound.Banco
       if (optionsBuilder.IsConfigured)
         return;
       optionsBuilder
-        .UseLazyLoadingProxies()
-        .UseSqlServer(connectionString);
+        .UseSqlServer(connectionString)
+        .UseLazyLoadingProxies();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
