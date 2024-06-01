@@ -31,7 +31,7 @@ namespace ScreenSound.API.Endpoints
 
       app.MapPost("/Artistas", async ([FromServices] IHostEnvironment env, [FromServices] DAL<Artista> artistaDAL, [FromBody] ArtistaRequest artistaRequest) =>
       {
-        var nome = artistaRequest.Nome.Trim();
+        var nome = artistaRequest.Nome.Trim().Replace(" ", "_");
         var imagemArtista = $"{DateTime.Now.ToString("ddMMyyyhhss")}.{nome}.jpeg";
 
         var path = Path.Combine(env.ContentRootPath, "wwwroot", "FotosPerfil", imagemArtista);
@@ -54,7 +54,7 @@ namespace ScreenSound.API.Endpoints
         if (artista is null)
           return Results.NotFound();
 
-        var nome = artistaRequestEdit.Nome.Trim();
+        var nome = artistaRequestEdit.Nome.Trim().Replace(" ", "_");
         var imagemArtista = $"{DateTime.Now.ToString("ddMMyyyhhss")}.{nome}.jpeg";
         if (artistaRequestEdit.FotoPerfil is not null)
         {
