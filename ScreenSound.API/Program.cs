@@ -12,8 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(
   options => options.AddPolicy(
     "wasm",
-    policy => policy.WithOrigins([builder.Configuration["BackendUrl"] ?? "https://localhost:7105",
-    builder.Configuration["FontendUrl"] ?? "https://localhost:7105"])
+    policy => policy.WithOrigins([builder.Configuration["BackendUrl"] ?? "https://localhost:7051/",
+    builder.Configuration["FontendUrl"] ?? "https://localhost:7084/"])
     .AllowAnyMethod()
     .SetIsOriginAllowed(pol => true)
     .AllowAnyHeader()
