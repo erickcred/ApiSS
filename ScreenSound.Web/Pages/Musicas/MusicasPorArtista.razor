@@ -1,7 +1,9 @@
-﻿@page "/Artistas"
-@using ScreenSound.Web.Components
-
+﻿@page "/Musicas/Artistas"
+@inject MusicaAPI musicaAPI
 @inject ArtistaAPI artistaAPI
+
+<h3>Musicas por artistas</h3>
+
 
 <div class="px-5 py-5">
   <MudStack Class="mt-4 mb-4" Row="true" Justify="Justify.SpaceBetween">
@@ -11,44 +13,46 @@
     </MudPagination>
   </MudStack>
 
-  @if (artistasPorPagina is not null)
+  @if (musicasPorPagina is not null)
   {
     <MudGrid>
-      @foreach (var artista in artistasPorPagina)
+      @foreach (var musica in musicasPorPagina)
       {
         <MudItem xs="3">
-          <CardArtista Artista="artista" />
+          <CardMusica Musica="musica" />
         </MudItem>
       }
     </MudGrid>
   }
 </div>
 
-
 @code {
-  private ICollection<ArtistaResponse>? ListaArtistas { get; set; }
-  private int tamanho = 8;
-  private int totalItens;
-  private int totalPaginas;
-  private ICollection<ArtistaResponse>? artistasPorPagina;
+  private ICollection<MusicaResponse>? Musicas { get; set; }
 
-  protected async override Task OnInitializedAsync()
+  protected override async Task OnInitializedAsync()
   {
-    ListaArtistas = await artistaAPI.GetArtistasAsync();
+    Musicas = await musicaAPI.GetMusicasAsync();
 
-    if (ListaArtistas is not null)
+    // Paginação
+    if (Musicas is not null)
     {
-      ListaArtistas = ListaArtistas.OrderByDescending(a => a.Id).ToList();
-      totalItens = ListaArtistas.Count();
+      Musicas = Musicas.OrderByDescending(a => a.Id).ToList();
+      totalItens = Musicas.Count();
       totalPaginas = Convert.ToInt32(Math.Ceiling((totalItens * 1.0) / tamanho));
       this.PaginaMudou(1);
     }
   }
 
+  /* Paginação */
+  private int tamanho = 8;
+  private int totalItens;
+  private int totalPaginas;
+  private ICollection<MusicaResponse>? musicasPorPagina;
+
   private void PaginaMudou(int numeroDaPagina)
   {
     var indice = numeroDaPagina - 1;
-    artistasPorPagina = ListaArtistas!
+    musicasPorPagina = Musicas!
           .Skip(tamanho * indice)
           .Take(tamanho)
           .ToList();
