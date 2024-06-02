@@ -8,7 +8,15 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors();
+builder.Services.AddCors(
+  options => options.AddPolicy(
+    "wasm",
+    policy => policy.WithOrigins([builder.Configuration["BackendUrl"] ?? "https://localhost:7105",
+    builder.Configuration["FontendUrl"] ?? "https://localhost:7105"])
+    .AllowAnyMethod()
+    .SetIsOriginAllowed(pol => true)
+    .AllowAnyHeader()
+    .AllowCredentials()));
 
 builder.Services.AddDbContext<ScreenSoundContext>(options =>
 {
@@ -40,11 +48,7 @@ app.UseSwaggerUI();
 
 app.UseStaticFiles();
 
-app.UseCors(x =>
-  x.AllowAnyMethod()
-  .AllowAnyHeader()
-  .SetIsOriginAllowed(origin => true)
-  .AllowCredentials());
+app.UseCors();
 
 
 app.Run();
