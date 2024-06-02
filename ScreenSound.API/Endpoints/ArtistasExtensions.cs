@@ -10,7 +10,11 @@ namespace ScreenSound.API.Endpoints
   {
     public static void AddEndPointsArtistas(this WebApplication app)
     {
-      app.MapGet("/Artistas", ([FromServices] DAL<Artista> artistaDAL) =>
+      var groupBuilder = app.MapGroup("Artistas")
+        .RequireAuthorization()
+        .WithTags("Aritstas");
+
+      groupBuilder.MapGet("", ([FromServices] DAL<Artista> artistaDAL) =>
       {
         var artistas = artistaDAL.Listar();
         if (artistas is null) return Results.NotFound();
@@ -19,7 +23,7 @@ namespace ScreenSound.API.Endpoints
         return Results.Ok(artistasResponse);
       });
 
-      app.MapGet("/Artistas/{nome}", ([FromServices] DAL<Artista> artistaDAL, string nome) =>
+      groupBuilder.MapGet("{nome}", ([FromServices] DAL<Artista> artistaDAL, string nome) =>
       {
         var artista = artistaDAL.RecuperarPor(x => x.Nome.Equals(nome, StringComparison.OrdinalIgnoreCase));
         if (artista is null)
@@ -29,7 +33,7 @@ namespace ScreenSound.API.Endpoints
         return Results.Ok(artistaResponse);
       });
 
-      app.MapPost("/Artistas", async ([FromServices] IHostEnvironment env, [FromServices] DAL<Artista> artistaDAL, [FromBody] ArtistaRequest artistaRequest) =>
+      groupBuilder.MapPost("", async ([FromServices] IHostEnvironment env, [FromServices] DAL<Artista> artistaDAL, [FromBody] ArtistaRequest artistaRequest) =>
       {
         var nome = artistaRequest.Nome.Trim().Replace(" ", "_");
         var imagemArtista = $"{DateTime.Now.ToString("ddMMyyyhhss")}.{nome}.jpeg";
@@ -48,7 +52,7 @@ namespace ScreenSound.API.Endpoints
         return Results.Created();
       });
 
-      app.MapPut("/Artistas/{id}", async ([FromServices] IHostEnvironment env, [FromServices] DAL<Artista> artistaDAL, [FromBody] ArtistaRequestEdit artistaRequestEdit, int id) =>
+      groupBuilder.MapPut("{id}", async ([FromServices] IHostEnvironment env, [FromServices] DAL<Artista> artistaDAL, [FromBody] ArtistaRequestEdit artistaRequestEdit, int id) =>
       {
         var artista = artistaDAL.RecuperarPor(x => x.Id == id);
         if (artista is null)
@@ -81,7 +85,7 @@ namespace ScreenSound.API.Endpoints
         return Results.Ok();
       });
 
-      app.MapDelete("/Artistas/{id}", ([FromServices] DAL<Artista> artistaDAL, int id) =>
+      groupBuilder.MapDelete("{id}", ([FromServices] DAL<Artista> artistaDAL, int id) =>
       {
         var artista = artistaDAL.RecuperarPor(x => x.Id == id);
         if (artista is null)

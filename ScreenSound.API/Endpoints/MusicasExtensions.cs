@@ -11,11 +11,15 @@ using ScreenSound.Shared.Modelos.Modelos;
 
 namespace ScreenSound.API.Endpoints
 {
-    public static class MusicasExtensions
+  public static class MusicasExtensions
   {
     public static void AddEndpointMusicas(this WebApplication app)
     {
-      app.MapGet("/Musicas", async ([FromServices] DAL<Musica> musicaDAL) =>
+      var groupBuilder = app.MapGroup("Musicas")
+        .RequireAuthorization()
+        .WithTags("Musicas");
+
+      groupBuilder.MapGet("", async ([FromServices] DAL<Musica> musicaDAL) =>
       {
         var musicas = musicaDAL.Listar();
         if (musicas is null) return Results.NotFound();
@@ -24,7 +28,7 @@ namespace ScreenSound.API.Endpoints
         return Results.Ok(musicasResponse);
       });
 
-      app.MapGet("/Musicas/{nome}", ([FromServices] DAL<Musica> musicaDAL, string nome) =>
+      groupBuilder.MapGet("{nome}", ([FromServices] DAL<Musica> musicaDAL, string nome) =>
       {
         var musica = musicaDAL.RecuperarPor(x => x.Nome.Equals(nome, StringComparison.OrdinalIgnoreCase));
         if (musica is null)
@@ -34,7 +38,7 @@ namespace ScreenSound.API.Endpoints
         return Results.Ok(musicaResponse);
       });
 
-      app.MapPost("/Musicas", (
+      groupBuilder.MapPost("", (
         [FromServices] DAL<Musica> musicaDAL,
         [FromServices] DAL<Genero> generoDAL,
         [FromServices] DAL<Discografia> disografiaDAL,
@@ -54,7 +58,7 @@ namespace ScreenSound.API.Endpoints
         return Results.Created();
       });
 
-      app.MapPut("/Musicas/{id}", ([FromServices] DAL<Musica> musicaDAL, [FromBody] MusicaRequestEdit musicaRequestEdit, int id) =>
+      groupBuilder.MapPut("{id}", ([FromServices] DAL<Musica> musicaDAL, [FromBody] MusicaRequestEdit musicaRequestEdit, int id) =>
       {
         var musica = musicaDAL.RecuperarPor(x => x.Id == id);
         if (musica is null)
@@ -67,7 +71,7 @@ namespace ScreenSound.API.Endpoints
         return Results.Ok();
       });
 
-      app.MapDelete("/Musicas/{id}", ([FromServices] DAL<Musica> musicaDAL, int id) =>
+      groupBuilder.MapDelete("{id}", ([FromServices] DAL<Musica> musicaDAL, int id) =>
       {
         var musica = musicaDAL.RecuperarPor(x => x.Id == id);
         if (musica is null)
@@ -88,7 +92,7 @@ namespace ScreenSound.API.Endpoints
       {
         var entity = RequestToEntity(item);
         var discografia = discografiaDAL.RecuperarPor(d => d.Nome.Equals(entity.Nome, StringComparison.OrdinalIgnoreCase));
-        
+
         if (discografia is not null)
           listaDeDiscografias.Add(discografia);
         else
@@ -96,7 +100,7 @@ namespace ScreenSound.API.Endpoints
       }
       return listaDeDiscografias;
     }
-    
+
     private static Discografia RequestToEntity(DiscografiaRequest discografia)
     {
       return new Discografia(discografia.Nome) { Descricao = discografia.Descricao };
@@ -111,7 +115,7 @@ namespace ScreenSound.API.Endpoints
       {
         var entity = RequestToEntity(item);
         var genero = generoDAL.RecuperarPor(g => g.Nome.Equals(item.Nome, StringComparison.OrdinalIgnoreCase));
-        
+
         if (genero is not null)
           listaDeGeneros.Add(genero);
         else

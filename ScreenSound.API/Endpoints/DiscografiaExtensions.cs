@@ -10,13 +10,17 @@ public static class DiscografiaExtensions
 {
   public static void AddEndpointDiscografia(this WebApplication app)
   {
-    app.MapGet("/Discografias", ([FromServices] DAL<Discografia> dal) =>
+    var groupBuilder = app.MapGroup("Discografias")
+      .RequireAuthorization()
+      .WithTags("Discografias");
+
+    groupBuilder.MapGet("", ([FromServices] DAL<Discografia> dal) =>
     {
       var discografias = DiscografiasResponseConverter(dal.Listar().ToList());
       return Results.Ok(discografias);
     });
 
-    app.MapGet("/Discografias/{nome}", ([FromServices] DAL<Discografia> dal, string nome) =>
+    groupBuilder.MapGet("{nome}", ([FromServices] DAL<Discografia> dal, string nome) =>
     {
       var discografia = dal.RecuperarPor(d => d.Nome.Equals(nome, StringComparison.OrdinalIgnoreCase));
       if (discografia is null)
@@ -26,7 +30,7 @@ public static class DiscografiaExtensions
       return Results.Ok(discografiaResponse);
     });
 
-    app.MapPost("/Discografias", ([FromServices] DAL<Discografia> dal, [FromBody] DiscografiaRequest discografiaRequest) =>
+    groupBuilder.MapPost("", ([FromServices] DAL<Discografia> dal, [FromBody] DiscografiaRequest discografiaRequest) =>
     {
       var discografia = new Discografia(discografiaRequest.Nome)
       {
@@ -37,7 +41,7 @@ public static class DiscografiaExtensions
       return Results.Created();
     });
 
-    app.MapPut("/Discografias/{id}", ([FromServices] DAL<Discografia> dal, [FromBody] DiscografiaRequest discografiaRequest, int id) =>
+    groupBuilder.MapPut("/Discografias/{id}", ([FromServices] DAL<Discografia> dal, [FromBody] DiscografiaRequest discografiaRequest, int id) =>
     {
       var discografia = dal.RecuperarPor(d => d.Id == id);
       if (discografia is null) return Results.NotFound();
@@ -50,7 +54,7 @@ public static class DiscografiaExtensions
       return Results.NoContent();
     });
 
-    app.MapDelete("/Discografias/{id}", ([FromServices] DAL<Discografia> dal, int id) =>
+    groupBuilder.MapDelete("/Discografias/{id}", ([FromServices] DAL<Discografia> dal, int id) =>
     {
       var discografia = dal.RecuperarPor(d => d.Id == id);
       if (discografia is null) return Results.NotFound();

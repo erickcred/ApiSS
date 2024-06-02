@@ -25,9 +25,13 @@ builder.Services.AddDbContext<ScreenSoundContext>(options =>
         .UseLazyLoadingProxies();
 });
 
+// Autenticação
 builder.Services
   .AddIdentityApiEndpoints<PessoaComAcesso>()
   .AddEntityFrameworkStores<ScreenSoundContext>();
+
+// Autorização
+builder.Services.AddAuthorization();
 
 builder.Services.AddTransient<DAL<Artista>>();
 builder.Services.AddTransient<DAL<Musica>>();
@@ -47,11 +51,17 @@ var app = builder.Build();
 
 app.UseCors("wasm");
 
+app.UseStaticFiles();
+
+// Autorização 
+app.UseAuthorization();
+
 app.AddEndPointsArtistas();
 app.AddEndpointMusicas();
 app.AddEndpointGeneros();
 app.AddEndpointDiscografia();
 
+// Autenticação
 app.MapGroup("auth")
   .MapIdentityApi<PessoaComAcesso>()
   .WithTags("Autorizacao");
@@ -59,7 +69,6 @@ app.MapGroup("auth")
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseStaticFiles();
 
 
 
